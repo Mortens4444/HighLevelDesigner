@@ -10,7 +10,7 @@ namespace Mtf.Core
         private readonly bool showUnhandledMessages;
         private readonly FileLogger fileLogger;
         private bool exitOnUnhandledException;
-        private string unhandledExceptionsFolder;
+        private readonly string unhandledExceptionsFolder;
 
         public ExceptionCatcher() : this($"{Application.ProductName} - {Application.ProductVersion}")
         { }
@@ -46,9 +46,8 @@ namespace Mtf.Core
 
         private void ThreadExceptionHandler(object sender, ThreadExceptionEventArgs e)
         {
-            var thread = sender as Thread;
-            var exception = thread == null || String.IsNullOrEmpty(thread.Name) ? e.Exception : new Exception($"Exception occurred on the following thread: {thread.Name}", e.Exception);
-            HandleException(exception);
+			var exception = !(sender is Thread thread) || String.IsNullOrEmpty(thread.Name) ? e.Exception : new Exception($"Exception occurred on the following thread: {thread.Name}", e.Exception);
+			HandleException(exception);
         }
 
         private void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)

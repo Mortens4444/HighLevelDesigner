@@ -132,21 +132,23 @@ namespace Mtf.Core
         {
             stringBuilder.AppendLine(ex.Message);
 
-            var win32Exception = ex as Win32Exception;
-            if (win32Exception != null)
-            {
-                stringBuilder.AppendLine($"Win32 NativeErrorCode: {win32Exception.NativeErrorCode} - {(SystemErrorCodes)win32Exception.NativeErrorCode}");
-            }
+			if (ex is Win32Exception win32Exception)
+			{
+				stringBuilder.AppendLine($"Win32 NativeErrorCode: {win32Exception.NativeErrorCode} - {(SystemErrorCodes)win32Exception.NativeErrorCode}");
+			}
 #if !__MonoCS__
-            else
-            {
-                if ((ex as ManagementException)?.ErrorInformation != null)
-                {
-                    stringBuilder.Append("ErrorInformation description: ");
-                    stringBuilder.AppendLine(Convert.ToString(((ManagementException)ex).ErrorInformation["Description"]));
-                }
-            }
+			else
+			{
+				if (ex is ManagementException managementException)
+				{
+					if (managementException.ErrorInformation != null)
+					{
+						stringBuilder.Append("ErrorInformation description: ");
+						stringBuilder.AppendLine(Convert.ToString(managementException.ErrorInformation["Description"]));
+					}
+				}
+			}
 #endif
-        }
+		}
     }
 }
